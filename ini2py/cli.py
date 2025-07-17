@@ -23,8 +23,7 @@ def infer_type(value: str) -> str:
             return "str"
 
 
-def generate_schema_class(section: str,
-                          options: configparser.SectionProxy) -> str:
+def generate_schema_class(section: str, options: configparser.SectionProxy) -> str:
     class_name = f"{snake_to_camel(section)}Schema"
     lines = [
         f"class {class_name}(ConfigSchema):",
@@ -38,21 +37,13 @@ def generate_schema_class(section: str,
         lines.append("    @property")
         lines.append(f"    def {option}(self):")
         if option_type == "int":
-            lines.append(
-                f"        return self._config_section.getint('{option}')"
-            )
+            lines.append(f"        return self._config_section.getint('{option}')")
         elif option_type == "float":
-            lines.append(
-                f"        return self._config_section.getfloat('{option}')"
-            )
+            lines.append(f"        return self._config_section.getfloat('{option}')")
         elif option_type == "boolean":
-            lines.append(
-                f"        return self._config_section.getboolean('{option}')"
-            )
+            lines.append(f"        return self._config_section.getboolean('{option}')")
         else:
-            lines.append(
-                f"        return self._config_section.get('{option}')"
-            )
+            lines.append(f"        return self._config_section.get('{option}')")
 
     return "\n".join(lines)
 
@@ -115,8 +106,7 @@ _TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
 def run_generator(config_path: str, output_dir: str):
     click.echo(f"Reading configuration from: {config_path}")
     if not os.path.exists(config_path):
-        click.secho(f"Error: Configuration file not found at '{config_path}'",
-                    fg="red")
+        click.secho(f"Error: Configuration file not found at '{config_path}'", fg="red")
         return
 
     # 修復：使用 RawConfigParser 來避免插值錯誤
@@ -126,21 +116,18 @@ def run_generator(config_path: str, output_dir: str):
     all_class_definitions = [
         generate_schema_class(s, config[s]) for s in config.sections()
     ]
-    with open(os.path.join(_TEMPLATE_DIR, "schema.py.tpl"),
-              "r", encoding="utf-8") as f:
+    with open(os.path.join(_TEMPLATE_DIR, "schema.py.tpl"), "r", encoding="utf-8") as f:
         schema_template = f.read()
     schema_content = schema_template.replace(
         "{{CLASS_DEFINITIONS}}", "\n\n".join(all_class_definitions)
     )
 
     os.makedirs(output_dir, exist_ok=True)
-    with open(os.path.join(output_dir, "schema.py"),
-              "w", encoding="utf-8") as f:
+    with open(os.path.join(output_dir, "schema.py"), "w", encoding="utf-8") as f:
         f.write(schema_content)
 
     click.secho(
-        f"Successfully generated {os.path.join(output_dir, 'schema.py')}",
-        fg="green"
+        f"Successfully generated {os.path.join(output_dir, 'schema.py')}", fg="green"
     )
 
     # --- Generate manager.py ---
@@ -156,8 +143,7 @@ def run_generator(config_path: str, output_dir: str):
     ) as f:
         manager_template = f.read()
 
-    content = manager_template.replace("{{SCHEMA_IMPORTS}}", 
-                                       "\n".join(schema_imports))
+    content = manager_template.replace("{{SCHEMA_IMPORTS}}", "\n".join(schema_imports))
     manager_content = content.replace(
         "{{MANAGER_PROPERTIES}}", "\n".join(manager_properties)
     )

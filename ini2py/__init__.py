@@ -1,5 +1,5 @@
 """
-ini2py - A CLI tool to generate type-hinted Python config classes from .ini 
+ini2py - A CLI tool to generate type-hinted Python config classes from .ini
 files.
 
 This package provides a command-line tool that converts INI configuration files
@@ -29,10 +29,7 @@ __email__ = "latte831104@example.com"
 __license__ = "MIT"
 
 # Re-export main CLI function for programmatic use
-from .cli import (
-    generate_schema_class, infer_type, main, 
-    run_generator, snake_to_camel
-)
+from .cli import generate_schema_class, infer_type, main, run_generator, snake_to_camel
 
 __all__ = [
     "main",
