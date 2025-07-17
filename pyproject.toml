@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ini2py"
-version = "0.2.0"
+version = "0.2.1"
 authors = [
   { name="JonesHong", email="latte831104@example.com" },
 ]
