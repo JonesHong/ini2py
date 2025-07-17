@@ -11,7 +11,7 @@ A CLI tool to generate type-hinted Python config classes from .ini files with au
 - 🔧 **Auto-generate type-hinted Python classes** from INI configuration files
 - 🔍 **Intelligent type inference** (int, float, boolean, string)
 - 🔄 **Hot reloading** - automatically reload configuration when files change
-- 🛡️ **Sensitive data masking** - automatically hide passwords and API keys
+- 🛡️ **Sensitive data protection** - passwords and API keys are only masked when using print_all()
 - 🎯 **Smart path detection** - automatically find config files in common locations
 - 💡 **IDE-friendly** - full autocomplete and type hints support
 - 🏗️ **Singleton pattern** - ensure single configuration instance across your app
@@ -91,13 +91,17 @@ debug = config.system.debug        # bool
 port = config.system.port          # int
 timeout = config.system.timeout    # float
 
-# Sensitive data is automatically masked when printed
-api_key = config.ai_service.api_key
-print(f"API Key: {api_key}")  # Output: API Key: sk-12**************ef
+# Access sensitive data normally
+api_key = config.ai_service.api_key  # Returns actual value
+password = config.database.password   # Returns actual value
 
-# Get all properties for debugging
+# Use print_all() to safely display configuration with masked sensitive data
 print("Database Config:")
-print(config.database.return_properties(return_type='list'))
+print(config.database.print_all(return_type='list'))
+# Output: ['host: localhost', 'port: 5432', 'password: se****23', ...]
+
+# Or get properties without masking (be careful!)
+print(config.database.return_properties(return_type='list', mask_sensitive=False))
 ```
 
 ## Advanced Usage
@@ -127,19 +131,26 @@ while True:
 
 ### Sensitive Data Handling
 
-Sensitive values are automatically detected and masked based on keywords:
+By default, sensitive data (passwords, API keys, etc.) is accessible normally. Use the `print_all()` method to safely display configuration with automatic masking.
+
+Sensitive keywords detected:
 - `password`, `pwd`
 - `api_token`, `token`
 - `secret`, `key`
 - `appkey`
 
 ```python
-# These will be masked in output
-config.database.password     # "se****23"
-config.ai_service.api_key   # "sk-12**************ef"
+# Normal access returns actual values
+password = config.database.password      # "secret123"
+api_key = config.ai_service.api_key     # "sk-1234567890abcdef"
 
-# Get unmasked values for actual use
-raw_config = config.database.return_properties(mask_sensitive=False)
+# Use print_all() for safe display
+config.database.print_all()              # password shown as "se****23"
+config.ai_service.print_all('dict')      # api_key shown as "sk-12**************ef"
+
+# Manual control with return_properties
+raw = config.database.return_properties(mask_sensitive=False)  # Actual values
+masked = config.database.return_properties(mask_sensitive=True) # Masked values
 ```
 
 ## Configuration File Discovery
@@ -242,12 +253,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### v0.2.2
+- Updated README documentation to clarify sensitive data handling
+- Added Chinese (Traditional) documentation (README.zh.md)
+
+### v0.2.1
+- Added `print_all()` method for safe display with automatic sensitive data masking
+- Fixed CI/CD issues for cross-platform compatibility
+- Improved code formatting with Black and isort
+
 ### v0.1.0
 - Initial release
 - Basic INI to Python class generation
 - Type inference support
 - Hot reloading with watchdog
-- Sensitive data masking
+- Sensitive data protection
 - Smart path detection
 
 ## Author

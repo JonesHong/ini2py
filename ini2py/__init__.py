@@ -23,7 +23,7 @@ Example usage:
     >>> print(config.database.host)  # Full type hints and autocomplete!
 """
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 __author__ = "JonesHong"
 __email__ = "latte831104@example.com"
 __license__ = "MIT"
